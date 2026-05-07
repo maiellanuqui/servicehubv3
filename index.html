@@ -322,12 +322,12 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; font-size: 14px; min
   gap: 5px;
   padding: 5px 12px;
   border-radius: 20px;
-  border: 1.5px solid #e0e0e0;
+  border: 1.5px solid #f60;
   background: #fff;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   font-size: 12.5px;
   font-weight: 600;
-  color: #555;
+  color: #f60;
   cursor: pointer;
   transition: all 0.15s;
   white-space: nowrap;
@@ -342,7 +342,7 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; font-size: 14px; min
   padding: 6px 14px; border-radius: 20px;
   font-size: 12.5px; font-weight: 600;
   cursor: pointer; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  border: 1.5px solid #ddd; background: #fff; color: #555;
+  border: 1.5px solid #f60; background: #fff; color: #f60;
   transition: all 0.15s;
 }
 .rq-tab:hover, .sv-tab:hover { border-color: #f60; color: #f60; background: #fff8f3; }
@@ -556,7 +556,7 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; font-size: 14px; min
     <!-- Services Dropdown -->
     <div class="nav-dropdown" id="ddServices">
       <div class="nav-link" onclick="toggleDropdown('ddServices')">
-        Resources
+        Tools and Support
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </div>
       <div class="dropdown-panel" id="panelServices" style="min-width:680px;max-width:90vw;width:auto;padding:0;overflow:hidden;">
@@ -675,29 +675,123 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; font-size: 14px; min
 <!-- ══════════════════ PAGE BODY ══════════════════ -->
 <div class="body">
 
-  <!-- TWO-COLUMN LAYOUT: [Track + Banner] | [Transactions + Exchange Rates] -->
-  <div class="two-col" style="grid-template-columns: clamp(280px, 28%, 420px) 1fr;">
+  <!-- FULL WIDTH ORDER LOOKUP -->
+    <div style="display:flex;flex-direction:column;gap:18px;">
 
-    <!-- LEFT: Track an Order + Marketing Banner stacked -->
-    <div style="display:flex;flex-direction:column;gap:18px;position:sticky;top:86px;align-self:start;">
-
-      <!-- TRACK AN ORDER -->
-      <div class="card" style="padding:0;background:#fafbfc;border:2px solid rgba(232,238,245,0.4);box-shadow:0 4px 12px rgba(232,238,245,0.15),0 2px 4px rgba(0,0,0,0.08);border-radius:10px;">
-        <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;">
-          <div style="width:32px;height:32px;border-radius:7px;background:#fff0e6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+      <!-- TRACK AN ORDER - FULL WIDTH -->
+      <div class="card" style="padding:0;background:#fafafa;border:2.5px solid rgba(128,128,128,0.4);box-shadow:0 4px 18px rgba(128,128,128,0.15);border-radius:10px;">
+        <div style="background:linear-gradient(135deg,#f5f5f5,#fafafa);border-radius:8px 8px 0 0;padding:11px 16px 10px;border-bottom:1.5px solid rgba(128,128,128,0.3);">
+          <div style="font-size:16px;font-weight:700;color:#666;margin-bottom:2px;display:flex;align-items:center;gap:7px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+            Look Up an Order
           </div>
-          <div style="flex:1;">
-            <div style="font-size:10.5px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Track, Modify, or Cancel an Order</div>
-            <div style="display:flex;">
-              <input type="text" id="trackInput" placeholder="Order #, PIN or transaction…" style="flex:1;height:32px;border:1.5px solid #ddd;border-right:none;border-radius:5px 0 0 5px;padding:0 10px;font-size:12.5px;font-family:Arial,sans-serif;outline:none;" onfocus="this.style.borderColor='#f60'" onblur="this.style.borderColor='#ddd'">
-              <button style="height:32px;padding:0 14px;background:#f60;border:none;border-radius:0 5px 5px 0;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;white-space:nowrap;">Search</button>
+        </div>
+        <div style="padding:12px 16px 10px;">
+          <div style="display:flex;align-items:center;border:2.5px solid rgba(128,128,128,0.4);border-radius:8px;overflow:hidden;background:#fff;box-shadow:0 1px 6px rgba(128,128,128,0.1);" id="trackSearchWrap">
+            <div style="padding:0 10px;display:flex;align-items:center;flex-shrink:0;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.8"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
             </div>
+            <input type="text" id="trackInput" placeholder="Enter the Order # or PIN " style="flex:1;height:38px;border:none;padding:0 6px;font-size:13px;font-family:Arial,sans-serif;outline:none;color:#222;background:transparent;" onfocus="document.getElementById('trackSearchWrap').style.boxShadow='0 0 0 3px rgba(128,128,128,0.2)'" onblur="document.getElementById('trackSearchWrap').style.boxShadow='0 1px 6px rgba(128,128,128,0.1)'">
+            <button style="height:38px;padding:0 18px;background:#f60;border:none;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#e05500'" onmouseout="this.style.background='#f60'">Search</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;margin-top:9px;flex-wrap:wrap;">
+            <span style="font-size:10.5px;color:#999;">After finding the order:</span>
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#ea580c;padding:3px 9px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              Track
+            </span>,
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#1a4fa0;padding:3px 9px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#1a4fa0" stroke-width="2.5"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Modify
+            </span>,
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#b91c1c;padding:3px 9px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+              Cancel
+            </span>,
+            <span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:#065f46;padding:3px 9px;">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+              Refund
+            </span>
           </div>
         </div>
       </div>
 
-      <!-- Marketing Banner (carousel) — below Track an Order -->
+    <!-- TWO-COLUMN LAYOUT: [Transactions + Exchange Rates] | [Marketing Banner] -->
+    <div class="two-col" style="grid-template-columns: 1fr clamp(280px, 28%, 420px);">
+
+      <!-- LEFT: Transactions + Exchange Rates stacked -->
+      <div style="display:flex;flex-direction:column;gap:18px;">
+
+      <!-- Transaction Table — Tabbed -->
+      <div class="card" style="background:#f8faff;border:2px solid rgba(26,79,160,0.4);box-shadow:0 4px 12px rgba(26,79,160,0.15),0 2px 4px rgba(0,0,0,0.08);border-radius:10px;">
+
+        <!-- Card header -->
+        <div class="card-header" style="padding-bottom:10px;border-bottom:none;flex-wrap:wrap;gap:8px;background:#f0f4ff;border-bottom:2px solid rgba(26,79,160,0.4);border-radius:8px 8px 0 0;">
+          <div class="card-title" style="font-size:16px;">Alerts</div>
+        </div>
+
+        <!-- Tab bar -->
+        <div style="display:flex;align-items:center;padding:0 14px;border-bottom:2px solid #e0e0e0;margin-top:10px;gap:0;overflow-x:auto;">
+          <button class="tx-tab active" id="tab-ch" onclick="switchTab('ch')">Compliance Hold <span class="tx-tab-count" id="count-ch"></span></button>
+          <button class="tx-tab" id="tab-rf" onclick="switchTab('rf')">Ready for Refund <span class="tx-tab-count" id="count-rf"></span></button>
+          <button class="tx-tab" id="tab-cr" onclick="switchTab('cr')">Checks to Resubmit <span class="tx-tab-count" id="count-cr"></span></button>
+          <button class="tx-tab" id="tab-ct" onclick="switchTab('ct')">Checks Returned <span class="tx-tab-count" id="count-ct"></span></button>
+          <button class="tx-tab" id="tab-um" onclick="switchTab('um')">Unread Messages <span class="tx-tab-count" id="count-um"></span></button>
+        </div>
+
+        <!-- Table -->
+        <div style="overflow-x:auto;">
+          <table class="tx-table" id="txMainTable">
+            <thead id="txHead"></thead>
+            <tbody id="txBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Exchange Rates — side-by-side layout -->
+      <div class="card" id="ratesCard" style="padding:0;overflow:hidden;background:#fff9f5;border:2px solid rgba(255,102,0,0.4);box-shadow:0 4px 12px rgba(255,102,0,0.18),0 2px 4px rgba(0,0,0,0.08);border-radius:10px;">
+        <!-- Header -->
+        <div class="card-header" style="padding:10px 14px 8px;background:#fff3ec;border-bottom:2px solid rgba(255,102,0,0.4);border-radius:8px 8px 0 0;">
+          <div class="card-title">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
+            Exchange Rates
+          </div>
+          <span class="card-meta">USD base · 9:00 AM</span>
+        </div>
+
+        <!-- Side-by-side body: list | detail -->
+        <div style="display:flex;border-top:1px solid #f0f0f0;height:500px;">
+
+          <!-- LEFT: country list -->
+          <div style="width:30%;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #f0f0f0;">
+            <!-- Search -->
+            <div style="padding:6px 9px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:5px;background:#fafafa;flex-shrink:0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <input type="text" id="ratesSearch" placeholder="Search country" oninput="filterRates()" style="flex:1;border:none;outline:none;font-size:12px;font-family:Arial,sans-serif;color:#333;background:transparent;">
+            </div>
+            <!-- Scrollable country list -->
+            <div id="ratesList" style="flex:1;overflow-y:auto;"></div>
+          </div>
+
+          <!-- RIGHT: detail panel -->
+          <div id="rateDetailPane" style="flex:1;background:#fff;overflow:hidden;"></div>
+
+        </div>
+
+        <!-- Footer links -->
+        <div style="padding:7px 12px;border-top:1px solid #f0f0f0;display:flex;gap:12px;background:#fafafa;flex-wrap:wrap;">
+          <a href="#" style="font-size:11.5px;font-weight:700;color:#f60;text-decoration:none;">Rate Customization</a>
+          <span style="color:#ddd;">|</span>
+          <a href="#" style="font-size:11.5px;font-weight:700;color:#f60;text-decoration:none;">Print Rate Sheet</a>
+          <span style="color:#ddd;">|</span>
+          <a href="#" style="font-size:11.5px;font-weight:700;color:#f60;text-decoration:none;">Print Top Rates</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Marketing Banner -->
+    <div style="display:flex;flex-direction:column;gap:18px;position:sticky;top:86px;align-self:start;">
       <div style="position:relative;overflow:hidden;border-radius:10px;" id="promoCarousel">
 
         <!-- Slides -->
@@ -745,78 +839,7 @@ body { font-family: Arial, sans-serif; background: #f0f0f0; font-size: 14px; min
 
     </div>
 
-    <!-- RIGHT: Transactions + Exchange Rates -->
-    <div style="display:flex;flex-direction:column;gap:18px;">
-
-      <!-- Transaction Table — Tabbed -->
-      <div class="card" style="background:#f8faff;border:2px solid rgba(26,79,160,0.4);box-shadow:0 4px 12px rgba(26,79,160,0.15),0 2px 4px rgba(0,0,0,0.08);border-radius:10px;">
-
-        <!-- Card header -->
-        <div class="card-header" style="padding-bottom:10px;border-bottom:none;flex-wrap:wrap;gap:8px;background:#f0f4ff;border-bottom:2px solid rgba(26,79,160,0.4);border-radius:8px 8px 0 0;">
-          <div class="card-title" style="font-size:16px;">Transactions</div>
-          <button onclick="window.location.href='transaction_search.html'" style="margin-left:auto;display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#1a4fa0;color:#fff;border:none;border-radius:6px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;white-space:nowrap;transition:background 0.15s;" onmouseover="this.style.background='#153d82'" onmouseout="this.style.background='#1a4fa0'">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-            Search All Transactions
-          </button>
-        </div>
-
-        <!-- Tab bar -->
-        <div style="display:flex;align-items:center;padding:0 14px;border-bottom:2px solid #e0e0e0;margin-top:10px;gap:0;overflow-x:auto;">
-          <button class="tx-tab active" id="tab-ch" onclick="switchTab('ch')">Compliance Hold <span class="tx-tab-count" id="count-ch"></span></button>
-          <button class="tx-tab" id="tab-rf" onclick="switchTab('rf')">Ready for Refund <span class="tx-tab-count" id="count-rf"></span></button>
-        </div>
-
-        <!-- Table -->
-        <div style="overflow-x:auto;">
-          <table class="tx-table" id="txMainTable">
-            <thead id="txHead"></thead>
-            <tbody id="txBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- Exchange Rates — side-by-side layout -->
-      <div class="card" id="ratesCard" style="padding:0;overflow:hidden;background:#fff9f5;border:2px solid rgba(255,102,0,0.4);box-shadow:0 4px 12px rgba(255,102,0,0.18),0 2px 4px rgba(0,0,0,0.08);border-radius:10px;">
-        <!-- Header -->
-        <div class="card-header" style="padding:10px 14px 8px;background:#fff3ec;border-bottom:2px solid rgba(255,102,0,0.4);border-radius:8px 8px 0 0;">
-          <div class="card-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 010 20M12 2a15.3 15.3 0 000 20"/></svg>
-            Exchange Rates
-          </div>
-          <span class="card-meta">USD base · 9:00 AM</span>
-        </div>
-
-        <!-- Side-by-side body: list | detail -->
-        <div style="display:flex;border-top:1px solid #f0f0f0;height:340px;">
-
-          <!-- LEFT: country list -->
-          <div style="width:30%;flex-shrink:0;display:flex;flex-direction:column;border-right:1px solid #f0f0f0;">
-            <!-- Search -->
-            <div style="padding:6px 9px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;gap:5px;background:#fafafa;flex-shrink:0;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-              <input type="text" id="ratesSearch" placeholder="Search country" oninput="filterRates()" style="flex:1;border:none;outline:none;font-size:12px;font-family:Arial,sans-serif;color:#333;background:transparent;">
-            </div>
-            <!-- Scrollable list -->
-            <div id="ratesList" style="overflow-y:auto;flex:1;"></div>
-          </div>
-
-          <!-- RIGHT: detail panel -->
-          <div id="rateDetailPane" style="flex:1;overflow-y:auto;background:#fff;"></div>
-
-        </div>
-
-        <!-- Footer links -->
-        <div style="padding:7px 12px;border-top:1px solid #f0f0f0;display:flex;gap:12px;background:#fafafa;flex-wrap:wrap;">
-          <a href="#" style="font-size:11.5px;font-weight:700;color:#f60;text-decoration:none;">Rate Customization</a>
-          <span style="color:#ddd;">|</span>
-          <a href="#" style="font-size:11.5px;font-weight:700;color:#f60;text-decoration:none;">Print Rate Sheet</a>
-          <span style="color:#ddd;">|</span>
-          <a href="#" style="font-size:11.5px;font-weight:700;color:#f60;text-decoration:none;">Print Top Rates</a>
-        </div>
-      </div>
-
     </div>
-  </div>
 
   <div style="height:24px;"></div>
 </div>
@@ -877,11 +900,16 @@ var txnData=[
   {id:'US2088332255',seq:3042,c:'Hassan Al-Rashid',r:'Fatima Al-Rashid',s:'1,200.00 USD',rv:'4,512.00 AED',st:'ch'},
   {id:'US2085774455',seq:2945,c:'Dmitri Volkov',r:'Natasha Volkov',s:'450.00 USD',rv:'40,500.00 RUB',st:'hs'},
   {id:'US2084991155',seq:2918,c:'Pedro Alvarez',r:'Carmen Alvarez',s:'750.00 USD',rv:'13,425.00 MXN',st:'hs'},
+  {id:'US2091433955',seq:1001,c:'9/29/2025',r:'To Cancel',s:'Unclaimed Order',rv:'Neglected Order - Changing "Hold to Customer pickup" to "Unclaimed". No of days since cancelled is 30',st:'um'},
+  {id:'US2095058855',seq:1002,c:'10/17/2025',r:'To Cancel',s:'Unclaimed Order',rv:'Neglected Order - Changing "Hold to Customer pickup" to "Unclaimed". No of days since cancelled is 30',st:'um'},
+  {id:'US12112710255',seq:1003,c:'2/4/2026',r:'Agent Message',s:'Additional sender information',rv:'Additional sender information is required for this order. An SMS request for sender to provide the necessary information was successfully generated on Apr 10 2026 3:48PM',st:'um'},
+  {id:'US12112710255',seq:1004,c:'2/4/2026',r:'Agent Message',s:'Cancellation',rv:'The order has been canceled. Order is available only for refund.',st:'um'},
 ];
 
 var pillMap={
   ch:'<span style="display:inline-block;padding:3px 9px;border-radius:5px;font-size:11.5px;font-weight:700;border:1.5px solid #d93535;color:#7a1f1f;background:#fff5f5;">Compliance Hold</span>',
   rf:'<span style="display:inline-block;padding:3px 9px;border-radius:5px;font-size:11.5px;font-weight:700;border:1.5px solid #22a64a;color:#1a5c2a;background:#f0fdf4;">Ready for Refund</span>',
+  um:'<span style="display:inline-block;padding:3px 9px;border-radius:5px;font-size:11.5px;font-weight:700;border:1.5px solid #f60;color:#8c4000;background:#fff8f3;">Unread Messages</span>',
 };
 var activeTab='ch';
 
@@ -890,48 +918,105 @@ function renderTxn(key){
   var rows=txnData.filter(function(r){
     return r.st===key && (!q||r.c.toLowerCase().includes(q)||r.id.toLowerCase().includes(q)||r.r.toLowerCase().includes(q));
   });
-  document.getElementById('txHead').innerHTML=
-    '<tr>'+
-    '<th style="width:138px;">Order No.</th>'+
-    '<th style="width:58px;">Seq. ID</th>'+
-    '<th style="width:185px;">Customer</th>'+
-    '<th style="width:150px;">Recipient</th>'+
-    '<th style="width:108px;text-align:right;">Send Amount</th>'+
-    '<th style="width:120px;text-align:right;">Receive Amount</th>'+
-    '<th style="width:155px;text-align:center;">Status</th>'+
-    '<th style="width:100px;text-align:center;">Actions</th>'+
-    '</tr>';
+  
+  // Set appropriate headers based on active tab
+  if(key==='um'){
+    document.getElementById('txHead').innerHTML='';
+  } else if(key==='ch'){
+    document.getElementById('txHead').innerHTML=
+      '<tr>'+
+      '<th style="width:138px;">Order No.</th>'+
+      '<th style="width:58px;">Seq. ID</th>'+
+      '<th style="width:185px;">Customer</th>'+
+      '<th style="width:150px;">Recipient</th>'+
+      '<th style="width:108px;text-align:right;">Send Amount</th>'+
+      '<th style="width:120px;text-align:right;">Receive Amount</th>'+
+      '<th style="width:155px;text-align:center;">Status</th>'+
+      '<th style="width:100px;text-align:center;">Actions</th>'+
+      '</tr>';
+  } else if(key==='rf'){
+    document.getElementById('txHead').innerHTML=
+      '<tr>'+
+      '<th style="width:138px;">Order No.</th>'+
+      '<th style="width:58px;">Seq. ID</th>'+
+      '<th style="width:185px;">Customer</th>'+
+      '<th style="width:150px;">Recipient</th>'+
+      '<th style="width:108px;text-align:right;">Send Amount</th>'+
+      '<th style="width:120px;text-align:right;">Receive Amount</th>'+
+      '<th style="width:155px;text-align:center;">Status</th>'+
+      '<th style="width:100px;text-align:center;">Actions</th>'+
+      '</tr>';
+  }
+  
   var body=document.getElementById('txBody');
   if(!rows.length){
     body.innerHTML='<tr><td colspan="8" style="text-align:center;padding:24px;color:#bbb;font-size:13px;">No results found</td></tr>';
     return;
   }
-  var limit=6;
-  var visible=rows.slice(0,limit);
-  var remaining=rows.length-limit;
-  body.innerHTML=visible.map(function(r){
-    return'<tr>'+
-      '<td><a href="#" style="color:#1a4fa0;font-weight:700;text-decoration:none;font-size:13px;white-space:nowrap;">'+r.id+'</a></td>'+
-      '<td style="color:#666;">'+r.seq+'</td>'+
-      '<td style="font-weight:600;color:#222;">'+r.c+'</td>'+
-      '<td style="color:#444;">'+r.r+'</td>'+
-      '<td style="text-align:right;font-weight:600;">'+r.s+'</td>'+
-      '<td style="text-align:right;font-weight:600;">'+r.rv+'</td>'+
-      '<td style="text-align:center;">'+(pillMap[r.st]||r.st)+'</td>'+
-      '<td style="text-align:center;white-space:nowrap;">'+
-        buildActionsBtn(r.id, r.st)+
-      '</td>'+
-    '</tr>';
-  }).join('');
-  if(rows.length>limit){
-    body.innerHTML+='<tr>'+
-      '<td colspan="8" style="padding:0;border-top:1px solid #f0f0f0;">'+
-        '<div style="width:100%;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:700;color:#1a4fa0;text-decoration:none;background:#fafafa;transition:background 0.15s;cursor:pointer;" onmouseover="this.style.background=\'#f0f4ff\'" onmouseout="this.style.background=\'#fafafa\'" onclick="return false;">'+
-          'View all '+rows.length+' transactions'+
-          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1a4fa0" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'+
-        '</div>'+
-      '</td>'+
-    '</tr>';
+  
+  if(key==='um'){
+    // Messages layout - create headers and rows for each message
+    var html = '';
+    rows.forEach(function(r, index){
+      // Header row for each message
+      html += '<tr>'+
+        '<td colspan="8" style="padding:8px 12px;background:#f8f9ff;border-bottom:1px solid #e0e0e0;">'+
+          '<div style="display:flex;align-items:center;gap:15px;">'+
+            '<div style="display:flex;align-items:center;gap:8px;">'+
+              '<span style="color:#f60;font-weight:700;font-size:13px;">'+r.id+'</span>'+
+              '<span style="color:#f60;font-weight:600;font-size:12px;">'+r.c+'</span>'+
+              '<span style="padding:2px 8px;background:#e8f5e8;color:#666;font-size:11px;border-radius:4px;">'+r.r+'</span>'+
+            '</div>'+
+          '</div>'+
+        '</td>'+
+      '</tr>'+
+      // Message detail row
+      '<tr>'+
+        '<td colspan="8" style="padding:0;border-bottom:1px solid #f0f0f0;">'+
+          '<table style="width:100%;border-collapse:collapse;">'+
+            '<tr>'+
+              '<td style="padding:8px;width:40px;vertical-align:top;"><input type="checkbox" style="width:16px;height:16px;"></td>'+
+              '<td style="padding:8px;width:120px;font-weight:600;color:#333;">'+r.s+'</td>'+
+              '<td style="padding:8px;width:150px;color:#666;">'+r.rv+'</td>'+
+              '<td style="padding:8px;color:#333;font-size:12px;line-height:1.4;">'+r.rv+'</td>'+
+              '<td style="padding:8px;width:120px;color:#666;">'+r.id+'</td>'+
+            '</tr>'+
+          '</table>'+
+        '</td>'+
+      '</tr>';
+    });
+    
+    body.innerHTML = html;
+  } else {
+    // Transaction layout (original)
+    var limit=6;
+    var visible=rows.slice(0,limit);
+    var remaining=rows.length-limit;
+    body.innerHTML=visible.map(function(r){
+      return'<tr>'+
+        '<td><a href="#" style="color:#1a4fa0;font-weight:700;text-decoration:none;font-size:13px;white-space:nowrap;">'+r.id+'</a></td>'+
+        '<td style="color:#666;">'+r.seq+'</td>'+
+        '<td style="font-weight:600;color:#222;">'+r.c+'</td>'+
+        '<td style="color:#444;">'+r.r+'</td>'+
+        '<td style="text-align:right;font-weight:600;">'+r.s+'</td>'+
+        '<td style="text-align:right;font-weight:600;">'+r.rv+'</td>'+
+        '<td style="text-align:center;">'+(pillMap[r.st]||r.st)+'</td>'+
+        '<td style="text-align:center;white-space:nowrap;">'+
+          buildActionsBtn(r.id, r.st)+
+        '</td>'+
+      '</tr>';
+    }).join('');
+    
+    if(rows.length>limit){
+      body.innerHTML+='<tr>'+
+        '<td colspan="8" style="padding:0;border-top:1px solid #f0f0f0;">'+
+          '<div style="width:100%;padding:11px;display:flex;align-items:center;justify-content:center;gap:6px;font-size:13px;font-weight:700;color:#1a4fa0;text-decoration:none;background:#fafafa;transition:background 0.15s;cursor:pointer;" onmouseover="this.style.background=\'#f0f4ff\'" onmouseout="this.style.background=\'#fafafa\'" onclick="return false;">'+
+            'View all '+rows.length+' transactions'+
+            '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#1a4fa0" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>'+
+          '</div>'+
+        '</td>'+
+      '</tr>';
+    }
   }
 }
 
@@ -965,7 +1050,7 @@ function switchTab(key){
   renderTxn(key);
 }
 
-['ch','rf','cr','rc'].forEach(function(k){
+['ch','rf','cr','rc','um'].forEach(function(k){
   var el=document.getElementById('count-'+k);
   if(el) el.textContent=txnData.filter(function(r){return r.st===k;}).length;
 });
@@ -1263,12 +1348,7 @@ var svData = {
     {
       heading: 'Money Transfer Tools',
       icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>',
-      items: ['Pending Orders','Payout Partner Lookup','Print Order Form','Manage Customers']
-    },
-    {
-      heading: 'Pay Order Tools',
-      icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>',
-      items: ['Download Orders','Transmission Log','Upload Payment Confirmation']
+      items: ['Transaction Search','Pending Orders','Payout Partner Lookup','Print Order Form','Manage Customers']
     },
     {
       heading: 'Other',
@@ -1512,5 +1592,13 @@ function sendMessage(input) {
 }
 
 </script>
+<!-- LIVE CHAT WIDGET -->
+    <div style="position:fixed;bottom:20px;right:20px;width:60px;height:60px;border-radius:50%;background-color:#ff6600;box-shadow:0 4px 12px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1000;">
+      <svg width="35" height="35" viewBox="0 0 24 24" fill="none">
+        <path d="M20 2H4C2.9 2 2 2.9 2 4v12c0 1.1.9 2 2 2h14l4 4V4c0-1.1-.9-2-2-2z" fill="#555" stroke="none"/>
+        <path d="M7 8h10M7 12h7" stroke="#ff6600" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </div>
+
 </body>
 </html>
