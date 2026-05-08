@@ -1249,12 +1249,12 @@ body { background: #f0f0f0; }
         <div class="os-chat-desc">The quickest way to get in touch. Connect with our team in seconds. We can support you in more than 100 languages.</div>
         <button class="os-chat-btn" onclick="openLiveHelpPopup()">Chat now →</button>
         <div class="os-additional-label">Additional Assistance</div>
-        <div style="position:relative;">
+        <div style="position:relative;z-index:10000;">
           <div id="addlSelectBtn" onclick="toggleAddlDropdown()" style="width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13.5px;font-family:Arial,sans-serif;background:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;box-sizing:border-box;" onmouseover="this.style.borderColor='#1a4fa0'" onmouseout="if(!document.getElementById('addlMenu').classList.contains('open'))this.style.borderColor='#e0e0e0'">
             <span id="addlSelectLabel" style="color:#aaa;">Select an option…</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5" id="addlChevron" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
           </div>
-          <div id="addlMenu" style="display:none;position:fixed;background:#fff;border:1.5px solid #1a4fa0;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:9000;overflow:hidden;">
+          <div id="addlMenu" style="display:none;position:fixed;background:#fff;border:1.5px solid #1a4fa0;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:9999;overflow:auto;max-height:200px;">
             <div class="addl-item" onclick="selectAddl('Account Balance')">Account Balance</div>
             <div class="addl-item" onclick="selectAddl('Agent / Partner Support')">Agent / Partner Support</div>
             <div class="addl-item" onclick="selectAddl('Check Cashing Support')">Check Cashing Support</div>
