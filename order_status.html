@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ria — Agent Hub</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: Arial, sans-serif; background: #f0f0f0; font-size: 14px; min-width: 800px; }
+
+/* ════════════════════════════════
+   TOP NAV — faithful recreation
+   ════════════════════════════════ */
+.top-nav {
+  background: #fff;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(12px, 1.5vw, 24px) 0 0;
+  border-bottom: 3px solid #f60;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  padding: 0 12px 0 10px;
+  flex-shrink: 0;
+  height: 52px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+}
+.nav-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0 12px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  transition: color 0.15s;
+  gap: 4px;
+}
+.nav-link:hover { color: #f60; }
+.nav-link.active { color: #f60; border-bottom-color: #f60; }
+
+/* SUB NAV ROW */
+.sub-nav {
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  padding: 0 clamp(12px, 1.5vw, 24px);
+  gap: 14px;
+  position: sticky;
+  top: 52px;
+  z-index: 199;
+}
+.sub-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.sub-user {
+  font-size: 12px;
+  font-weight: 700;
+  color: #f60;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sub-sep { width: 1px; height: 16px; background: #ddd; }
+.sub-gear { cursor: pointer; opacity: 0.5; transition: opacity 0.15s; display:flex;align-items:center; }
+.sub-gear:hover { opacity: 0.9; }
+.sub-loc { font-size: 12px; color: #555; font-weight: 600; }
+.sub-ref-btn {
+  background: #1a3c6e;
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  border: none;
+  font-family: Arial, sans-serif;
+}
+.sub-ref-btn span { color: #f7c948; }
+
+/* Hamburger button */
+.ham-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 7px 8px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.ham-btn:hover { background: #fff4ec; }
+
+/* ════════════════════════════════
+   PAGE BODY
+   ════════════════════════════════ */
+.body {
+  padding: 16px clamp(16px, 2vw, 32px) 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+/* ── TWO-COL LAYOUT ── */
+.two-col {
+  display: grid;
+  grid-template-columns: clamp(320px, 28vw, 420px) 1fr;
+  gap: 16px;
+  align-items: start;
+}
+@media (max-width: 950px) { .two-col { grid-template-columns: 1fr; } }
+
+/* ── CARDS ── */
+.card {
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 14px;
+  border-bottom: 1px solid #f0f0f0;
+  background: #fafafa;
+}
+.card-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #222;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.card-meta { font-size: 11px; color: #aaa; }
+
+/* ── DROPDOWN ITEM STYLING ── */
+.dd-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.12s;
+  cursor: pointer;
+}
+.dd-item:hover { background: #fff8f3; }
+.dd-label {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+}
+.dd-item:hover .dd-label { color: #f60; }
+
+/* ── TRANSACTION TABLE ── */
+.tx-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.tx-table th {
+  background: #fafafa;
+  padding: 9px 12px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  border-bottom: 1px solid #eee;
+  white-space: nowrap;
+}
+.tx-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f5f5f5;
+  vertical-align: middle;
+}
+.tx-table tr:last-child td { border-bottom: none; }
+.tx-table tbody tr:hover td { background: #fff8f3; }
+
+/* ── RIGHT COLUMN ── */
+.right-col { display: flex; flex-direction: column; gap: 14px; }
+
+.up { color: #1a7a3c; } .dn { color: #b91c1c; }
+
+/* ── PROMO CAROUSEL ── */
+.promo-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s;
+}
+.promo-dot.active {
+  background: #f60;
+  width: 20px;
+  border-radius: 4px;
+}
+
+/* ── REPORT CATEGORY PILLS ── */
+.rpt-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid #e0e0e0;
+  background: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.rpt-pill:hover { border-color: #7c3aed; color: #7c3aed; background: #faf5ff; }
+.rpt-pill.active { background: #7c3aed; border-color: #7c3aed; color: #fff; }
+.rpt-pill.active svg { stroke: #fff; }
+
+
+/* ── REPORT PANEL LINKS ── */
+.rpt-panel { padding: 10px 14px 12px; }
+
+
+/* ── REPORT / RESOURCE GROUPS ── */
+.rpt-btn-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  color: #333;
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+  line-height: 1.3;
+  border: 1px solid transparent;
+}
+.rpt-btn-item svg { flex-shrink: 0; opacity: 0.45; transition: opacity 0.12s; color: #555; }
+.rpt-btn-item:hover {
+  background: #fff4ec;
+  color: #f60;
+  border-color: #fdd8b8;
+}
+.rpt-btn-item:hover svg { opacity: 1; color: #f60; }
+
+/* ── QUICK DROPDOWN ENHANCEMENTS ── */
+@keyframes quickDropIn {
+  from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);    }
+}
+.quick-panel-open {
+  animation: quickDropIn 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+
+/* Active-state for quick action buttons */
+.qa-btn-active {
+  border-color: #f60 !important;
+  background: #fff3e6 !important;
+  box-shadow: 0 0 0 3px rgba(255,102,0,0.15) !important;
+}
+.qa-btn-active span { color: #f60 !important; }
+
+/* ── TRANSACTION TABS ══ */
+.tx-tab {
+  position: relative;
+  padding: 9px 12px 10px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #666;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-bottom: none;
+  border-radius: 6px 6px 0 0;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.15s, background 0.15s;
+  bottom: -2px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.tx-tab:hover { color: #f60; background: #fff; }
+.tx-tab.active {
+  color: #f60;
+  background: #fff;
+  border-color: #ddd;
+  border-bottom-color: #fff;
+  z-index: 1;
+}
+.tx-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  min-width: 20px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 10px;
+  background: #eee;
+  color: #666;
+}
+.tx-tab.active .tx-tab-count { background: #fff3e8; color: #f60; }
+
+.nav-link {
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  padding: 0 12px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -3px;
+  transition: color 0.15s;
+  gap: 4px;
+}
+.nav-link:hover { color: #f60; }
+.nav-link.active { color: #f60; border-bottom-color: #f60; }
+
+</style>
+</head>
+<body>
+<!-- ══════════════════ TOP NAV ══════════════════ -->
+<nav class="top-nav">
+
+  <!-- Ria Logo -->
+  <div class="nav-logo" onclick="window.location.href='index.html'" style="cursor:pointer;" title="Home">
+    <img src="data:image/png;base64,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" height="34" alt="Ria" style="display:block;width:auto;">
+  </div>
+
+  <!-- Nav links -->
+  <div class="nav-links">
+    <div class="nav-link">Products</div>
+    <div class="nav-link">Tools and Support</div>
+    <div class="nav-link">Reports</div>
+  </div>
+   
+  <!-- Search Icon -->
+  <button onclick="window.location.href='transaction_search.html'" style="background:none;border:none;cursor:pointer;padding:10px;border-radius:8px;display:flex;align-items:center;justify-content:center;transition:background 0.15s;margin-right:12px;" onmouseover="this.style.background='#fff8f3'" onmouseout="this.style.background='none'">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="3"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+  </button>
+
+  <!-- Credit Available & Amount to Pay -->
+  <div style="display:flex;align-items:center;gap:16px;margin-right:12px;flex-shrink:0;">
+    <!-- Credit Available -->
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+      <div style="font-size:11px;font-weight:700;color:#444;white-space:nowrap;">
+        Credit Available &nbsp;<span style="color:#1a2e4a;font-weight:800;">1,740,697 USD</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:120px;height:14px;background:#e0e0e0;border-radius:20px;overflow:hidden;">
+          <div style="width:79%;height:100%;background:linear-gradient(90deg,#f60,#ff8c3a);border-radius:20px;display:flex;align-items:center;justify-content:center;">
+            <span style="font-size:9.5px;font-weight:800;color:#fff;letter-spacing:0.3px;">79%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Amount to Pay -->
+    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+      <div style="font-size:11px;font-weight:700;color:#444;white-space:nowrap;">
+        Amount to Pay &nbsp;<a href="account_statement.html" style="color:#dc2626;font-weight:800;background:#fef2f2;padding:3px 8px;border-radius:4px;border:1px solid #fecaca;font-size:13px;text-decoration:none;transition:background 0.15s,color 0.15s;" onmouseover="this.style.background='#fee2e2';this.style.color='#b91c1c'" onmouseout="this.style.background='#fef2f2';this.style.color='#dc2626'">425,350 USD</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hamburger removed from right, now on left -->
+</nav>
+
+<!-- SUB NAV ROW -->
+<div class="sub-nav">
+  <div class="sub-nav-left">
+    <span style="font-size:13px;font-weight:700;color:#333;">Order Status</span>
+  </div>
+
+  <!-- User info + Refer button — right side -->
+  <div style="display:flex;align-items:center;gap:10px;margin-left:auto;">
+    <div class="sub-user">
+      MNUQUI
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div class="sub-sep"></div>
+    <div class="sub-gear">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/>
+      </svg>
+    </div>
+    <div class="sub-loc">CA1146 &nbsp; 11 &nbsp; 4-02S</div>
+    <div class="sub-sep"></div>
+    <button class="sub-ref-btn">Refer Customer <span>to Ria App</span></button>
+  </div>
+</div>
+
+
+    <!-- ══════════════════ PAGE BODY ══════════════════ -->
+<div class="body">
+
+  <!-- TRACK + QUICK ACTIONS REMOVED -->
+  <div style="display:none;">
+
+    <!-- Track an Order — wider input -->
+    <div class="card" style="padding:0;flex-shrink:0;display:flex;align-items:stretch;width:clamp(320px,28vw,420px);">
+      <div style="display:flex;align-items:center;gap:10px;padding:14px 18px;height:100%;width:100%;">
+        <div style="width:32px;height:32px;border-radius:7px;background:#fff0e6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        </div>
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:10.5px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Track, Modify, or Cancel an Order</div>
+          <div style="display:flex;">
+            <input type="text" id="trackInput" placeholder="Order #, PIN or transaction…" style="width:100%;min-width:0;height:32px;border:1.5px solid #ddd;border-right:none;border-radius:5px 0 0 5px;padding:0 10px;font-size:12.5px;font-family:Arial,sans-serif;outline:none;" onfocus="this.style.borderColor='#f60'" onblur="this.style.borderColor='#ddd'">
+            <button style="height:32px;padding:0 14px;background:#f60;border:none;border-radius:0 5px 5px 0;color:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;white-space:nowrap;">Search</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;align-items:stretch;">
+
+      <!-- Account dropdown -->
+      <div style="position:relative;display:flex;flex-direction:column;height:100%;">
+        <button id="accountQuickBtn" onclick="toggleAccountQuick()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:#fff;border:1.5px solid #e8e8e8;border-radius:10px;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;width:100%;height:100%;" onmouseover="this.style.borderColor='#f60';this.style.background='#fff8f3'" onmouseout="if(!document.getElementById('accountQuickPanel').classList.contains('aq-open')){this.style.borderColor='#e8e8e8';this.style.background='#fff'}">
+          <div style="width:30px;height:30px;border-radius:8px;background:#fff0e6;display:flex;align-items:center;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:#333;white-space:nowrap;">Account</span>
+        </button>
+
+        <!-- Account dropdown panel -->
+        <div id="accountQuickPanel" style="display:none;position:fixed;top:calc(100% + 6px);min-width:240px;max-width:90vw;width:auto;background:#fff;border:1.5px solid #f60;border-top:3px solid #f60;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.22),0 4px 16px rgba(255,102,0,0.12);z-index:400;overflow:hidden;">
+          <!-- Panel header -->
+          <div style="padding:10px 16px 8px;background:linear-gradient(135deg,#fff8f3 0%,#fff3e6 100%);border-bottom:1px solid #ffe0c8;display:flex;align-items:center;gap:8px;">
+            <div style="width:24px;height:24px;border-radius:6px;background:#fff0e6;border:1px solid #fdd8b8;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </div>
+            <span style="font-size:11.5px;font-weight:800;color:#c45000;text-transform:uppercase;letter-spacing:0.5px;">Account</span>
+          </div>
+          <div style="padding:8px 10px 10px;">
+            <a href="account_statement.html" class="dd-item">
+              <div class="dd-label">View my balance</div>
+            </a>
+            <a href="#" class="dd-item">
+              <div class="dd-label">Training Courses</div>
+            </a>
+            <a href="#" class="dd-item">
+              <div class="dd-label">Request New User</div>
+            </a>
+            <a href="#" class="dd-item">
+              <div class="dd-label">View Inquiries</div>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tools dropdown -->
+      <div style="position:relative;display:flex;flex-direction:column;height:100%;">
+        <button id="toolsQuickBtn" onclick="toggleToolsQuick()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:#fff;border:1.5px solid #e8e8e8;border-radius:10px;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;width:100%;height:100%;" onmouseover="this.style.borderColor='#f60';this.style.background='#fff8f3'" onmouseout="if(!document.getElementById('toolsQuickPanel').classList.contains('tq-open')){this.style.borderColor='#e8e8e8';this.style.background='#fff'}">
+          <div style="width:30px;height:30px;border-radius:8px;background:#eff4ff;display:flex;align-items:center;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="1.8"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:#333;white-space:nowrap;">Tools</span>
+        </button>
+
+        <!-- Tools dropdown panel with column category layout (matches prototype Servicing > Tools) -->
+        <div id="toolsQuickPanel" style="display:none;position:fixed;min-width:560px;max-width:90vw;background:#fff;border:1.5px solid #2563eb;border-top:3px solid #2563eb;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.22),0 4px 16px rgba(37,99,235,0.12);z-index:400;overflow:hidden;">
+          <!-- Panel header -->
+          <div style="padding:10px 18px 8px;background:linear-gradient(135deg,#eff4ff 0%,#dbeafe 100%);border-bottom:1px solid #bfdbfe;display:flex;align-items:center;gap:8px;">
+            <div style="width:24px;height:24px;border-radius:6px;background:#eff4ff;border:1px solid #bfdbfe;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+            </div>
+            <span style="font-size:11.5px;font-weight:800;color:#1d4ed8;text-transform:uppercase;letter-spacing:0.5px;">Tools</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
+            <!-- Money Transfer Tools -->
+            <div style="border-right:1px solid #f0f0f0;padding:0;">
+              <div style="display:flex;align-items:center;gap:6px;padding:10px 18px 8px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <span style="color:#555;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></span>
+                <span style="font-size:11px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:0.5px;">Money Transfer Tools</span>
+              </div>
+              <a href="pending_orders.html" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Pending Orders</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Payout Partner Lookup</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Print Order Form</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Manage Customers</div>
+              </a>
+            </div>
+            <!-- Pay Order Tools -->
+            <div style="border-right:1px solid #f0f0f0;padding:0;">
+              <div style="display:flex;align-items:center;gap:6px;padding:10px 18px 8px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <span style="color:#555;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></span>
+                <span style="font-size:11px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:0.5px;">Pay Order Tools</span>
+              </div>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Download Orders</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Transmission Log</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Upload Payment Confirmation</div>
+              </a>
+            </div>
+            <!-- Other -->
+            <div style="padding:0;">
+              <div style="display:flex;align-items:center;gap:6px;padding:10px 18px 8px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <span style="color:#555;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></span>
+                <span style="font-size:11px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:0.5px;">Other</span>
+              </div>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Digital Receipts Manager</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Rate Board Display</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Request Equipment / Supplies</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reports dropdown -->
+      <div style="position:relative;display:flex;flex-direction:column;height:100%;">
+        <button id="reportsQuickBtn" onclick="toggleReportsQuick()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:#fff;border:1.5px solid #e8e8e8;border-radius:10px;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;width:100%;height:100%;" onmouseover="this.style.borderColor='#f60';this.style.background='#fff8f3'" onmouseout="if(!document.getElementById('reportsQuickPanel').classList.contains('rq-open')){this.style.borderColor='#e8e8e8';this.style.background='#fff'}">
+          <div style="width:30px;height:30px;border-radius:8px;background:#fdf4ff;display:flex;align-items:center;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="1.8"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:#333;white-space:nowrap;">Reports</span>
+        </button>
+
+        <!-- Reports dropdown panel with pill filtering -->
+        <div id="reportsQuickPanel" style="display:none;position:fixed;top:calc(100% + 6px);min-width:600px;max-width:90vw;width:auto;background:#fff;border:1.5px solid #7c3aed;border-top:3px solid #7c3aed;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.22),0 4px 16px rgba(124,58,237,0.12);z-index:400;overflow:hidden;">
+
+          <!-- Panel header -->
+          <div style="padding:10px 16px 8px;background:linear-gradient(135deg,#faf5ff 0%,#f3e8ff 100%);border-bottom:1px solid #e9d5ff;display:flex;align-items:center;gap:8px;">
+            <div style="width:24px;height:24px;border-radius:6px;background:#fdf4ff;border:1px solid #e9d5ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            </div>
+            <span style="font-size:11.5px;font-weight:800;color:#6d28d9;text-transform:uppercase;letter-spacing:0.5px;">Reports</span>
+          </div>
+
+          <!-- Category pills -->
+          <div style="display:flex;gap:6px;padding:10px 14px;background:#fafafa;border-bottom:1px solid #f0f0f0;flex-wrap:wrap;">
+            <button class="rpt-pill active" onclick="selectRptCat(this,'rpt-mt')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              Money Transfer
+            </button>
+            <button class="rpt-pill" onclick="selectRptCat(this,'rpt-po')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="6" width="22" height="13" rx="2"/><path d="M1 10h22"/></svg>
+              Pay Order
+            </button>
+            <button class="rpt-pill" onclick="selectRptCat(this,'rpt-co')">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Compliance
+            </button>
+          </div>
+
+          <!-- Report panels -->
+          <div style="padding:12px 16px;">
+            <div id="rpt-mt" class="rpt-panel">
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;">
+                <a href="account_statement.html" class="dd-item">
+                  <div class="dd-label">Account Statement</div>
+                </a>
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Commission Report</div>
+                </a>
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Agent Commission Statement</div>
+                </a>
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Transaction Detail Report</div>
+                </a>
+              </div>
+            </div>
+
+            <div id="rpt-po" class="rpt-panel" style="display:none;">
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;">
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Orders Export</div>
+                </a>
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Paid Orders Report</div>
+                </a>
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Transaction Report</div>
+                </a>
+              </div>
+            </div>
+
+            <div id="rpt-co" class="rpt-panel" style="display:none;">
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:6px;">
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Transaction Summary by Customer Risk (Money Transfer)</div>
+                </a>
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Transaction Summary by Customer Risk (Currency Exchange)</div>
+                </a>
+                <a href="#" class="dd-item">
+                  <div class="dd-label">Unusual Order Report</div>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Help & Documents dropdown -->
+      <div style="position:relative;display:flex;flex-direction:column;height:100%;">
+        <button id="helpQuickBtn" onclick="toggleHelpQuick()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 8px;background:#fff;border:1.5px solid #e8e8e8;border-radius:10px;cursor:pointer;font-family:Arial,sans-serif;transition:all 0.15s;width:100%;height:100%;" onmouseover="this.style.borderColor='#f60';this.style.background='#fff8f3'" onmouseout="if(!document.getElementById('helpQuickPanel').classList.contains('hq-open')){this.style.borderColor='#e8e8e8';this.style.background='#fff'}">
+          <div style="width:30px;height:30px;border-radius:8px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <span style="font-size:12px;font-weight:700;color:#333;white-space:nowrap;">Help & Documents</span>
+        </button>
+
+        <!-- Help & Documents dropdown panel with column category layout (matches prototype Servicing > Help & Docs) -->
+        <div id="helpQuickPanel" style="display:none;position:fixed;min-width:560px;max-width:90vw;background:#fff;border:1.5px solid #16a34a;border-top:3px solid #16a34a;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,0.22),0 4px 16px rgba(22,163,74,0.12);z-index:400;overflow:hidden;">
+          <!-- Panel header -->
+          <div style="padding:10px 18px 8px;background:linear-gradient(135deg,#f0fdf4 0%,#dcfce7 100%);border-bottom:1px solid #bbf7d0;display:flex;align-items:center;gap:8px;">
+            <div style="width:24px;height:24px;border-radius:6px;background:#f0fdf4;border:1px solid #bbf7d0;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            </div>
+            <span style="font-size:11.5px;font-weight:800;color:#15803d;text-transform:uppercase;letter-spacing:0.5px;">Help &amp; Documents</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:0;">
+            <!-- Application Support -->
+            <div style="border-right:1px solid #f0f0f0;padding:0;">
+              <div style="display:flex;align-items:center;gap:6px;padding:10px 18px 8px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <span style="color:#555;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span>
+                <span style="font-size:11px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:0.5px;">Application Support</span>
+              </div>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Site Requirements</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Site Verifications</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">RDM Verification</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Downloads</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">About FxOnline</div>
+              </a>
+            </div>
+            <!-- Help Desk -->
+            <div style="border-right:1px solid #f0f0f0;padding:0;">
+              <div style="display:flex;align-items:center;gap:6px;padding:10px 18px 8px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <span style="color:#555;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></span>
+                <span style="font-size:11px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:0.5px;">Help Desk</span>
+              </div>
+              <a href="#" onclick="openLiveHelpPopup(); return false;" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Live Help</div>
+              </a>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Agent Documents</div>
+              </a>
+            </div>
+            <!-- Configuration Tools -->
+            <div style="padding:0;">
+              <div style="display:flex;align-items:center;gap:6px;padding:10px 18px 8px;border-bottom:1px solid #f0f0f0;background:#fafafa;">
+                <span style="color:#555;"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></span>
+                <span style="font-size:11px;font-weight:800;color:#333;text-transform:uppercase;letter-spacing:0.5px;">Configuration Tools</span>
+              </div>
+              <a href="#" class="dd-item" style="padding:8px 18px;">
+                <div class="dd-label">Payment Terminal (Cloud)</div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+<!-- ══════════════════ ORDER STATUS PAGE ══════════════════ -->
+<style>
+body { background: #f0f0f0; }
+
+.os-wrap {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px 24px 40px;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 16px;
+  align-items: start;
+}
+
+/* ── TOP BAR removed – title now in sub-nav ── */
+
+/* ── MAIN CARD ── */
+.os-main-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+.os-card-header {
+  padding: 14px 20px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+.os-card-body { padding: 20px; }
+
+/* ── STATUS BADGES ── */
+.os-status-badges {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.os-badge-hold {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  border-radius: 6px;
+  padding: 8px 16px;
+  color: #dc2626;
+  font-weight: 700;
+  font-size: 13.5px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 200px;
+}
+.os-badge-review {
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  border-radius: 6px;
+  padding: 8px 14px;
+  color: #1d4ed8;
+  font-weight: 600;
+  font-size: 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 200px;
+}
+.os-badge-review-title { font-weight: 700; font-size: 13.5px; display: flex; align-items: center; gap: 6px; }
+.os-badge-review-sub { font-size: 11.5px; color: #3b82f6; }
+
+/* ── ACTION PANEL ── */
+.os-action-panel {
+  float: right;
+  width: 340px;
+  margin-left: 20px;
+  margin-bottom: 16px;
+}
+.os-warning-bar {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 6px;
+  padding: 9px 14px;
+  font-size: 12px;
+  color: #92400e;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.os-action-dropdown {
+  position: relative;
+  margin-bottom: 0;
+}
+.os-action-select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-family: Arial, sans-serif;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  font-weight: 600;
+  color: #333;
+}
+.os-action-select:hover { border-color: #f60; }
+.os-action-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0; right: 0;
+  background: #fff;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  z-index: 100;
+  overflow: hidden;
+}
+.os-action-menu.open { display: block; }
+.os-action-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+  font-size: 13.5px;
+  color: #333;
+  cursor: pointer;
+  transition: background 0.1s;
+  border-bottom: 1px solid #f5f5f5;
+}
+.os-action-item:last-child { border-bottom: none; }
+.os-action-item:hover { background: #fff8f3; color: #f60; }
+.os-action-item svg { flex-shrink: 0; }
+
+/* ── PROGRESS TRACKER ── */
+.os-progress { margin: 24px 0 20px; clear: both; }
+.os-progress-track {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+.os-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+.os-step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #ddd;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #aaa;
+  margin-bottom: 6px;
+  transition: all 0.2s;
+}
+.os-step-circle.done { background: #fff; border-color: #f60; color: #f60; }
+.os-step-circle.active { background: #f60; border-color: #f60; color: #fff; width: 32px; height: 32px; }
+.os-step-label { font-size: 11.5px; font-weight: 600; color: #aaa; text-align: center; white-space: nowrap; }
+.os-step-label.done { color: #333; }
+.os-step-label.active { color: #f60; font-weight: 700; }
+.os-step-date { font-size: 10px; color: #aaa; text-align: center; margin-top: 2px; }
+.os-step-line {
+  flex: 1;
+  height: 3px;
+  background: #eee;
+  margin-bottom: 28px;
+  margin-top: -1px;
+  z-index: 0;
+}
+.os-step-line.done { background: #f60; }
+
+/* ── ORDER DETAILS ── */
+.os-details-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+.os-detail-group { display: flex; flex-direction: column; gap: 3px; }
+.os-detail-label { font-size: 11px; color: #888; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+.os-detail-val { font-size: 13.5px; font-weight: 700; color: #1a1a1a; line-height: 1.4; }
+.os-detail-sub { font-size: 12px; color: #666; line-height: 1.5; }
+
+/* ── FINANCIAL TABLE ── */
+.os-fin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+}
+.os-fin-table th {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  padding: 10px 12px;
+  text-align: left;
+  background: #fafafa;
+  border-bottom: 1px solid #eee;
+}
+.os-fin-table td {
+  padding: 12px 12px;
+  font-size: 14px;
+  color: #1a1a1a;
+  border-bottom: 1px solid #f5f5f5;
+}
+.os-fin-table td:first-child { font-size: 18px; font-weight: 800; }
+.os-fin-table .currency { font-size: 11px; font-weight: 600; color: #f60; margin-left: 3px; }
+.os-fin-table .rate-small { font-size: 11px; color: #888; }
+
+/* ── RIGHT SIDEBAR ── */
+.os-sidebar { display: flex; flex-direction: column; gap: 14px; }
+
+.os-log-card, .os-contact-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  overflow: hidden;
+}
+.os-log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+}
+.os-log-actions { display: flex; gap: 10px; }
+.os-log-action-btn {
+  font-size: 12px;
+  color: #1a4fa0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  font-weight: 600;
+}
+.os-log-action-btn:hover { color: #f60; text-decoration: underline; }
+.os-log-body { padding: 14px 18px; }
+.os-log-select-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 12.5px;
+  color: #555;
+}
+.os-log-entry {
+  border: 1px solid #e8e8e8;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+.os-log-entry-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.os-log-tag {
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #555;
+  white-space: nowrap;
+}
+.os-log-meta { font-size: 11px; color: #aaa; margin-top: 2px; }
+.os-log-text { font-size: 12.5px; color: #555; line-height: 1.5; }
+
+.os-contact-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+  font-weight: 700;
+  color: #333;
+}
+.os-contact-body { padding: 16px 18px; }
+.os-chat-title { font-size: 15px; font-weight: 800; color: #1a1a1a; margin-bottom: 6px; }
+.os-chat-desc { font-size: 13px; color: #666; line-height: 1.5; margin-bottom: 14px; }
+.os-chat-btn {
+  background: #f60;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: Arial, sans-serif;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s;
+  margin-bottom: 16px;
+}
+.os-chat-btn:hover { background: #e05500; }
+.os-additional-label { font-size: 12px; font-weight: 700; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+.os-additional-select {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 7px;
+  font-size: 13px;
+  font-family: Arial, sans-serif;
+  background: #fff;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+.os-additional-select:focus { outline: none; border-color: #f60; }
+</style>
+
+<div class="os-wrap">
+
+  <!-- MAIN LEFT CARD -->
+  <div class="os-main-card">
+    <div class="os-card-header">Order Information</div>
+    <div class="os-card-body">
+
+      <!-- Status badges + Action panel side by side -->
+      <div style="display:flex;gap:16px;align-items:flex-start;">
+
+        <!-- Left: badges -->
+        <div style="flex:1;">
+          <div class="os-status-badges">
+            <div class="os-badge-hold">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              Compliance Hold
+            </div>
+            <div class="os-badge-review">
+              <div class="os-badge-review-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1d4ed8" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Received – Under Review
+              </div>
+              <div class="os-badge-review-sub">Proof - Origin of Money (ex. bank statement or payroll check stub)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: action panel -->
+        <div style="width:300px;flex-shrink:0;">
+          <div class="os-warning-bar">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg>
+            Modification and cancellation is not allowed for this order.
+          </div>
+          <div class="os-action-dropdown">
+            <div class="os-action-select" id="actionSelectBtn" onclick="toggleActionMenu()">
+              <span>Choose an action</span>
+              <svg id="actionChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5" style="transition:transform 0.2s;"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="os-action-menu" id="actionMenu">
+              <div class="os-action-item" onclick="handleAction('inquiry')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Submit Inquiry
+              </div>
+              <div class="os-action-item" onclick="handleAction('id')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+                Submit ID Image
+              </div>
+              <div class="os-action-item" onclick="handleAction('docs')">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Submit Documents
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Progress tracker -->
+      <div class="os-progress">
+        <div class="os-progress-track">
+          <div class="os-step">
+            <div class="os-step-circle done">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <div class="os-step-label done">Entered</div>
+            <div class="os-step-date">2/4/2026 10:46 AM</div>
+          </div>
+          <div class="os-step-line done"></div>
+          <div class="os-step">
+            <div class="os-step-circle active">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="os-step-label active">Compliance Hold</div>
+            <div class="os-step-date">&nbsp;</div>
+          </div>
+          <div class="os-step-line"></div>
+          <div class="os-step">
+            <div class="os-step-circle">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2.5"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="os-step-label">Available For Pick Up</div>
+            <div class="os-step-date">&nbsp;</div>
+          </div>
+          <div class="os-step-line"></div>
+          <div class="os-step">
+            <div class="os-step-circle">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2.5"><circle cx="12" cy="12" r="4"/></svg>
+            </div>
+            <div class="os-step-label">Paid</div>
+            <div class="os-step-date">&nbsp;</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Order details grid -->
+      <div class="os-details-grid">
+        <div class="os-detail-group">
+          <div class="os-detail-label">Order Number</div>
+          <div class="os-detail-val">US12112663455</div>
+          <div class="os-detail-label" style="margin-top:8px;">Sequence No.</div>
+          <div class="os-detail-val">3474</div>
+        </div>
+        <div></div>
+        <div></div>
+        <div class="os-detail-group">
+          <div class="os-detail-label">Sender</div>
+          <div class="os-detail-val">Maiella Nuqui</div>
+          <div class="os-detail-sub">89 CA-66, 24<br>Upland, CA 91786<br>United States</div>
+          <div class="os-detail-label" style="margin-top:8px;">Telephone</div>
+          <div class="os-detail-sub">1-909 8900909<br>(916) 429-5898</div>
+        </div>
+        <div class="os-detail-group">
+          <div class="os-detail-label">Recipient</div>
+          <div class="os-detail-val">Jessica Simpson</div>
+          <div class="os-detail-sub">Tijuana, BCN<br>Mexico</div>
+        </div>
+        <div class="os-detail-group">
+          <div class="os-detail-label">Order Details</div>
+          <div class="os-detail-val">7-Eleven Mexico</div>
+          <div class="os-detail-sub">Cash Pick-Up<br>Mexico<br>Via Poniente 1<br>Branch: 1321</div>
+        </div>
+      </div>
+
+      <!-- Financial table -->
+      <table class="os-fin-table">
+        <thead>
+          <tr>
+            <th>Recipient Will Get</th>
+            <th>Exchange Rate</th>
+            <th>Customer Is Sending</th>
+            <th>Fee</th>
+            <th>Tax</th>
+            <th>Customer Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>343.60 <span class="currency">MXN</span></td>
+            <td>1 <span class="rate-small">USD</span> = 17.1800 <span class="rate-small">MXN</span></td>
+            <td>20.00 <span class="currency">USD</span></td>
+            <td>11.00</td>
+            <td>0.20</td>
+            <td>31.20 <span class="currency">USD</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  <!-- RIGHT SIDEBAR -->
+  <div class="os-sidebar">
+
+    <!-- Customer Service Log -->
+    <div class="os-log-card">
+      <div class="os-log-header">
+        Customer Service Log
+        <div class="os-log-actions">
+          <button class="os-log-action-btn">Print</button>
+          <button class="os-log-action-btn">Laser</button>
+        </div>
+      </div>
+      <div class="os-log-body">
+        <div class="os-log-select-row">
+          <input type="checkbox" id="selectAll" onchange="toggleSelectAll(this)">
+          <label for="selectAll" style="cursor:pointer;font-weight:600;">Select All</label>
+        </div>
+        <div class="os-log-entry">
+          <div class="os-log-entry-header">
+            <input type="checkbox" class="log-checkbox">
+            <div style="flex:1;">
+              <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="os-log-tag">Auto Generated Message</span>
+                <span style="font-size:11.5px;color:#888;">Maiella Nona Nuqui (CA7524) 2/17/2026 9:03 AM</span>
+              </div>
+            </div>
+          </div>
+          <div class="os-log-text">The Customer has submitted the required document(s), and you will see order status update once the document(s) are reviewed.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Still Need to Contact us? -->
+    <div class="os-contact-card">
+      <div class="os-contact-header">Still Need to Contact us?</div>
+      <div class="os-contact-body">
+        <div class="os-chat-title">Chat with us</div>
+        <div class="os-chat-desc">The quickest way to get in touch. Connect with our team in seconds. We can support you in more than 100 languages.</div>
+        <button class="os-chat-btn" onclick="openLiveHelpPopup()">Chat now →</button>
+        <div class="os-additional-label">Additional Assistance</div>
+        <div style="position:relative;">
+          <div id="addlSelectBtn" onclick="toggleAddlDropdown()" style="width:100%;padding:10px 14px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:13.5px;font-family:Arial,sans-serif;background:#fff;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;box-sizing:border-box;" onmouseover="this.style.borderColor='#1a4fa0'" onmouseout="if(!document.getElementById('addlMenu').classList.contains('open'))this.style.borderColor='#e0e0e0'">
+            <span id="addlSelectLabel" style="color:#aaa;">Select an option…</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5" id="addlChevron" style="transition:transform 0.2s;flex-shrink:0;"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div id="addlMenu" style="display:none;position:fixed;background:#fff;border:1.5px solid #1a4fa0;border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:9000;overflow:hidden;">
+            <div class="addl-item" onclick="selectAddl('Account Balance')">Account Balance</div>
+            <div class="addl-item" onclick="selectAddl('Agent / Partner Support')">Agent / Partner Support</div>
+            <div class="addl-item" onclick="selectAddl('Check Cashing Support')">Check Cashing Support</div>
+            <div class="addl-item" onclick="selectAddl('Compliance Hold')">Compliance Hold</div>
+            <div class="addl-item" onclick="selectAddl('General Support')">General Support</div>
+            <div class="addl-item" onclick="selectAddl('Report Suspicious Activity')">Report Suspicious Activity</div>
+            <div class="addl-item" style="border-bottom:none;" onclick="selectAddl('Technical Support')">Technical Support</div>
+          </div>
+        </div>
+        <!-- Compliance Hold call card -->
+        <div id="complianceCallCard" style="display:none;margin-top:10px;background:#eef2fb;border:1.5px solid #c7d4f0;border-radius:10px;padding:16px 18px;text-align:center;">
+          <div style="font-size:14px;font-weight:800;color:#1a1a1a;margin-bottom:4px;">Give us a Call</div>
+          <div style="font-size:13px;color:#555;margin-bottom:14px;">Speak with our team on the phone</div>
+          <a href="tel:18664704389" style="display:inline-block;padding:10px 24px;border:2px solid #1a1a1a;border-radius:30px;font-size:14px;font-weight:700;color:#1a1a1a;text-decoration:none;transition:all 0.15s;" onmouseover="this.style.background='#1a1a1a';this.style.color='#fff'" onmouseout="this.style.background='transparent';this.style.color='#1a1a1a'">1 (866) 470-4389</a>
+        </div>
+
+        <style>
+          .addl-item { padding:11px 16px;font-size:13.5px;color:#333;cursor:pointer;border-bottom:1px solid #f0f0f0;transition:background 0.1s; }
+          .addl-item:hover { background:#f0f4ff;color:#1a4fa0; }
+        </style>
+        <script>
+          function toggleAddlDropdown() {
+            var menu = document.getElementById('addlMenu');
+            var btn = document.getElementById('addlSelectBtn');
+            var chevron = document.getElementById('addlChevron');
+            var open = menu.classList.toggle('open');
+            if (open) {
+              var rect = btn.getBoundingClientRect();
+              menu.style.display = 'block';
+              menu.style.top = (rect.bottom + 2) + 'px';
+              menu.style.left = rect.left + 'px';
+              menu.style.width = rect.width + 'px';
+            } else {
+              menu.style.display = 'none';
+            }
+            chevron.style.transform = open ? 'rotate(180deg)' : '';
+            btn.style.borderColor = open ? '#1a4fa0' : '#e0e0e0';
+          }
+          function selectAddl(val) {
+            document.getElementById('addlSelectLabel').textContent = val;
+            document.getElementById('addlSelectLabel').style.color = '#333';
+            document.getElementById('addlMenu').classList.remove('open');
+            document.getElementById('addlMenu').style.display = 'none';
+            document.getElementById('addlChevron').style.transform = '';
+            document.getElementById('addlSelectBtn').style.borderColor = '#e0e0e0';
+            document.getElementById('complianceCallCard').style.display = val === 'Compliance Hold' ? 'block' : 'none';
+          }
+          document.addEventListener('click', function(e) {
+            var btn = document.getElementById('addlSelectBtn');
+            var menu = document.getElementById('addlMenu');
+            if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+              menu.classList.remove('open');
+              menu.style.display = 'none';
+              document.getElementById('addlChevron').style.transform = '';
+              btn.style.borderColor = '#e0e0e0';
+            }
+          });
+        </script>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ── Submit Inquiry Modal ── -->
+<div class="modal-overlay" id="inquiryModal" onclick="closeModalOnBg(event,'inquiryModal')" style="display:none;">
+  <div class="modal-box" style="width:480px;">
+    <div class="modal-header">
+      <div class="modal-header-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Submit Inquiry
+      </div>
+      <button class="modal-close" onclick="closeModal('inquiryModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field"><label>Order Number</label><input type="text" value="US12112663455" readonly style="background:#f9f9f9;"></div>
+      <div class="modal-field"><label>Inquiry Type</label>
+        <select style="width:100%;height:40px;border:1.5px solid #e0e0e0;border-radius:8px;padding:0 10px;font-size:13.5px;font-family:Arial,sans-serif;outline:none;">
+          <option>Compliance Hold – Document Request</option>
+          <option>Payment Issue</option>
+          <option>Recipient Not Found</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="modal-field"><label>Message</label>
+        <textarea style="width:100%;height:100px;border:1.5px solid #e0e0e0;border-radius:8px;padding:10px 12px;font-size:13px;font-family:Arial,sans-serif;outline:none;resize:none;" placeholder="Describe your inquiry…"></textarea>
+      </div>
+      <button class="modal-btn">Submit Inquiry</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Submit ID Image Modal ── -->
+<div class="modal-overlay" id="idModal" onclick="closeModalOnBg(event,'idModal')" style="display:none;">
+  <div class="modal-box" style="width:460px;">
+    <div class="modal-header">
+      <div class="modal-header-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+        Submit ID Image
+      </div>
+      <button class="modal-close" onclick="closeModal('idModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field"><label>Order Number</label><input type="text" value="US12112663455" readonly style="background:#f9f9f9;"></div>
+      <div class="modal-field"><label>ID Type</label>
+        <select style="width:100%;height:40px;border:1.5px solid #e0e0e0;border-radius:8px;padding:0 10px;font-size:13.5px;font-family:Arial,sans-serif;outline:none;">
+          <option>Driver's License</option><option>Passport</option><option>State ID</option><option>Military ID</option>
+        </select>
+      </div>
+      <div class="modal-field"><label>Upload Image</label>
+        <div style="border:2px dashed #e0e0e0;border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#f60'" onmouseout="this.style.borderColor='#e0e0e0'">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" style="margin:0 auto 8px;display:block;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div style="font-size:13px;color:#999;">Drop file here or <span style="color:#f60;font-weight:700;">browse</span></div>
+          <div style="font-size:11px;color:#bbb;margin-top:4px;">JPG, PNG or PDF · Max 10MB</div>
+        </div>
+      </div>
+      <button class="modal-btn">Submit ID Image</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Submit Documents Modal ── -->
+<div class="modal-overlay" id="docsModal" onclick="closeModalOnBg(event,'docsModal')" style="display:none;">
+  <div class="modal-box" style="width:460px;">
+    <div class="modal-header">
+      <div class="modal-header-title">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#f60" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Submit Documents
+      </div>
+      <button class="modal-close" onclick="closeModal('docsModal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field"><label>Order Number</label><input type="text" value="US12112663455" readonly style="background:#f9f9f9;"></div>
+      <div class="modal-field"><label>Document Type</label>
+        <select style="width:100%;height:40px;border:1.5px solid #e0e0e0;border-radius:8px;padding:0 10px;font-size:13.5px;font-family:Arial,sans-serif;outline:none;">
+          <option>Bank Statement</option><option>Payroll Check Stub</option><option>Tax Return</option><option>Other</option>
+        </select>
+      </div>
+      <div class="modal-field"><label>Upload Document</label>
+        <div style="border:2px dashed #e0e0e0;border-radius:8px;padding:24px;text-align:center;cursor:pointer;transition:border-color 0.15s;" onmouseover="this.style.borderColor='#f60'" onmouseout="this.style.borderColor='#e0e0e0'">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="1.5" style="margin:0 auto 8px;display:block;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <div style="font-size:13px;color:#999;">Drop file here or <span style="color:#f60;font-weight:700;">browse</span></div>
+          <div style="font-size:11px;color:#bbb;margin-top:4px;">JPG, PNG or PDF · Max 10MB</div>
+        </div>
+      </div>
+      <button class="modal-btn">Submit Documents</button>
+    </div>
+  </div>
+</div>
+
+<style>
+.modal-overlay { display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;padding:20px;box-sizing:border-box; }
+.modal-overlay.open { display:flex; }
+.modal-box { background:#fff;border-radius:16px;max-width:95vw;max-height:85vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,0.25); }
+.modal-header { display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid #f0f0f0; }
+.modal-header-title { font-size:16px;font-weight:800;color:#1a1a1a;display:flex;align-items:center;gap:8px; }
+.modal-close { width:30px;height:30px;border-radius:50%;background:#f5f5f5;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background 0.12s; }
+.modal-close:hover { background:#ffe8d8; }
+.modal-body { padding:20px; }
+.modal-field { margin-bottom:14px; }
+.modal-field label { display:block;font-size:12px;font-weight:700;color:#555;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.4px; }
+.modal-field input { width:100%;height:40px;border:1.5px solid #e0e0e0;border-radius:8px;padding:0 12px;font-size:13.5px;font-family:Arial,sans-serif;outline:none;box-sizing:border-box;transition:border-color 0.15s; }
+.modal-field input:focus { border-color:#f60; }
+.modal-btn { width:100%;padding:12px;background:#f60;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;transition:background 0.15s; }
+.modal-btn:hover { background:#e05500; }
+</style>
+
+<script>
+function toggleActionMenu() {
+  var menu = document.getElementById('actionMenu');
+  var chevron = document.getElementById('actionChevron');
+  var open = menu.classList.toggle('open');
+  chevron.style.transform = open ? 'rotate(180deg)' : '';
+}
+document.addEventListener('click', function(e) {
+  var btn = document.getElementById('actionSelectBtn');
+  var menu = document.getElementById('actionMenu');
+  if (btn && menu && !btn.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+    document.getElementById('actionChevron').style.transform = '';
+  }
+});
+function handleAction(type) {
+  document.getElementById('actionMenu').classList.remove('open');
+  document.getElementById('actionChevron').style.transform = '';
+  if (type === 'inquiry') openModal('inquiryModal');
+  if (type === 'id')      openModal('idModal');
+  if (type === 'docs')    openModal('docsModal');
+}
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModalOnBg(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay.open').forEach(function(m){ m.classList.remove('open'); });
+});
+function toggleSelectAll(cb) {
+  document.querySelectorAll('.log-checkbox').forEach(function(c){ c.checked = cb.checked; });
+}
+/* reuse openLiveHelpPopup from main nav JS */
+</script>
+
+
+<script>
+/* ── NAV QUICK DROPDOWNS ── */
+var quickPanels = {
+  accountQuickPanel:  { btnId: 'accountQuickBtn',  openClass: 'aq-open' },
+  toolsQuickPanel:    { btnId: 'toolsQuickBtn',    openClass: 'tq-open' },
+  reportsQuickPanel:  { btnId: 'reportsQuickBtn',  openClass: 'rq-open' },
+  helpQuickPanel:     { btnId: 'helpQuickBtn',     openClass: 'hq-open' }
+};
+var openPanelId = null;
+
+function positionPanel(panelId) {
+  var cfg = quickPanels[panelId];
+  var panel = document.getElementById(panelId);
+  var btn = document.getElementById(cfg.btnId);
+  if (!panel || !btn) return;
+  var btnRect = btn.getBoundingClientRect();
+  var panelWidth = panel.offsetWidth;
+  var viewportW = window.innerWidth;
+  var viewportH = window.innerHeight;
+  var topPosition = btnRect.bottom + 6;
+  var leftPosition = btnRect.right - panelWidth;
+  if (leftPosition < 8) leftPosition = btnRect.left;
+  if (leftPosition + panelWidth > viewportW - 8) leftPosition = viewportW - panelWidth - 8;
+  var maxH = viewportH - topPosition - 8;
+  panel.style.maxHeight = maxH + 'px';
+  panel.style.overflowY = 'auto';
+  panel.style.left = leftPosition + 'px';
+  panel.style.top = topPosition + 'px';
+  panel.style.right = 'auto';
+}
+
+function openQuickPanel(panelId) {
+  if (openPanelId && openPanelId !== panelId) closeQuickPanel(openPanelId);
+  var cfg = quickPanels[panelId];
+  var panel = document.getElementById(panelId);
+  var btn = document.getElementById(cfg.btnId);
+  if (!panel || !btn) return;
+  panel.style.display = 'block';
+  panel.style.visibility = 'hidden';
+  positionPanel(panelId);
+  panel.style.visibility = 'visible';
+  panel.classList.add(cfg.openClass, 'quick-panel-open');
+  btn.classList.add('qa-btn-active');
+  openPanelId = panelId;
+}
+
+function closeQuickPanel(panelId) {
+  var cfg = quickPanels[panelId];
+  var panel = document.getElementById(panelId);
+  var btn = document.getElementById(cfg.btnId);
+  if (!panel) return;
+  panel.classList.remove(cfg.openClass, 'quick-panel-open');
+  panel.style.display = 'none';
+  if (btn) { btn.classList.remove('qa-btn-active'); btn.style.borderColor = '#e8e8e8'; btn.style.background = '#fff'; }
+  if (openPanelId === panelId) openPanelId = null;
+}
+
+function toggleQuickPanel(panelId) {
+  var cfg = quickPanels[panelId];
+  var panel = document.getElementById(panelId);
+  if (panel && panel.classList.contains(cfg.openClass)) { closeQuickPanel(panelId); } else { openQuickPanel(panelId); }
+}
+
+function toggleAccountQuick()  { toggleQuickPanel('accountQuickPanel'); }
+function toggleToolsQuick()    { toggleQuickPanel('toolsQuickPanel'); }
+function toggleReportsQuick()  { toggleQuickPanel('reportsQuickPanel'); }
+function toggleHelpQuick()     { toggleQuickPanel('helpQuickPanel'); }
+
+window.addEventListener('scroll', function() { if (openPanelId) positionPanel(openPanelId); }, { passive: true });
+
+document.addEventListener('click', function(e) {
+  if (!openPanelId) return;
+  var cfg = quickPanels[openPanelId];
+  var panel = document.getElementById(openPanelId);
+  var btn = document.getElementById(cfg.btnId);
+  if (panel && !panel.contains(e.target) && btn && !btn.contains(e.target)) { closeQuickPanel(openPanelId); }
+});
+
+function selectHlpCat(btn, panelId) {
+  document.querySelectorAll('.hlp-pill').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.hlp-panel').forEach(function(p){ p.style.display='none'; });
+  document.getElementById(panelId).style.display='block';
+}
+
+function selectRptCat(btn, panelId) {
+  document.querySelectorAll('.rpt-pill').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.rpt-panel').forEach(function(p){ p.style.display='none'; });
+  document.getElementById(panelId).style.display='block';
+}
+
+function closeAllDropdowns() {
+  document.querySelectorAll('[id^="act-"]').forEach(function(m){ m.style.display='none'; });
+  document.querySelectorAll('[id$="QuickPanel"]').forEach(function(p){ p.style.display='none'; });
+}
+
+/* Scan Document Popup */
+function openScanDocumentPopup() {
+  closeAllDropdowns();
+  var popup = document.createElement('div');
+  popup.id = 'scanDocumentPopup';
+  popup.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+  popup.innerHTML = '<div style="position:relative;display:inline-block;max-width:50vw;max-height:calc(100vh - 40px);"><img id="scanDocImage" src="ch_1.png" alt="Scan Document" style="display:block;width:100%;height:auto;object-fit:contain;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);cursor:pointer;" onclick="nextScanDocumentImage()"><button onclick="closeScanDocumentPopup()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.7);border:none;color:#fff;cursor:pointer;padding:8px;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>';
+  document.body.appendChild(popup);
+}
+function nextScanDocumentImage() {
+  var img = document.getElementById('scanDocImage');
+  if (!img) return;
+  var match = img.src.match(/ch_(\d+)\.png/);
+  var currentNum = match ? parseInt(match[1]) : 1;
+  if (currentNum === 4) { closeScanDocumentPopup(); return; }
+  img.src = 'ch_' + (currentNum + 1) + '.png';
+}
+function closeScanDocumentPopup() { var p = document.getElementById('scanDocumentPopup'); if (p) p.remove(); }
+
+/* Live Help Popup */
+function openLiveHelpPopup() {
+  closeAllDropdowns();
+  var popup = document.createElement('div');
+  popup.id = 'liveHelpPopup';
+  popup.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;box-sizing:border-box;';
+  popup.innerHTML = '<div style="position:relative;display:inline-block;max-width:35vw;max-height:calc(100vh - 40px);"><img src="live_help.png" alt="Live Help" style="display:block;width:100%;height:auto;object-fit:contain;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.3);"><button onclick="closeLiveHelpPopup()" style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.7);border:none;color:#fff;cursor:pointer;padding:8px;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>';
+  document.body.appendChild(popup);
+}
+function closeLiveHelpPopup() { var p = document.getElementById('liveHelpPopup'); if (p) p.remove(); }
+
+/* Actions Dropdown */
+var actionsMenuItems = {
+  ch: [{label:'View Receipt'},{label:'Scan Document'},{label:'View Compliance Forms'},{label:'Submit Inquiry'}],
+  rf: [{label:'View Receipt'},{label:'Refund Order'},{label:'Submit Inquiry'}],
+  _default: [{label:'View Receipt'},{label:'Scan Document'},{label:'Submit Inquiry'}]
+};
+function buildActionsBtn(txId, status){
+  var uid = 'act-' + txId.replace(/[^a-z0-9]/gi,'');
+  return '<div style="position:relative;display:inline-block;"><button onclick="toggleActionsMenu(\''+uid+'\',\''+status+'\',event)" style="padding:5px 10px;font-size:12px;font-weight:700;border:1.5px solid #f60;border-radius:5px 0 0 5px;background:#fff;color:#f60;cursor:pointer;font-family:Arial,sans-serif;">Actions</button><button onclick="toggleActionsMenu(\''+uid+'\',\''+status+'\',event)" style="padding:5px 7px;font-size:12px;font-weight:700;border:1.5px solid #f60;border-left:none;border-radius:0 5px 5px 0;background:#fff;color:#f60;cursor:pointer;font-family:Arial,sans-serif;">&#8964;</button><div id="'+uid+'" style="display:none;position:absolute;right:0;top:calc(100% + 4px);background:#fff;border:1.5px solid #f60;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,0.13);z-index:500;min-width:190px;padding:4px 0;text-align:left;"></div></div>';
+}
+function toggleActionsMenu(uid, status, e){
+  e.stopPropagation();
+  var menu = document.getElementById(uid);
+  if (!menu) return;
+  var isOpen = menu.style.display !== 'none';
+  document.querySelectorAll('[id^="act-"]').forEach(function(m){ m.style.display='none'; });
+  if (!isOpen){
+    var items = actionsMenuItems[status] || actionsMenuItems._default;
+    menu.innerHTML = items.map(function(item){
+      var href = item.label === 'Refund Order' ? 'refund_order.html' : '#';
+      var onclick = item.label === 'Scan Document' ? 'openScanDocumentPopup(); return false;' : 'return false;';
+      return '<a href="'+href+'" onclick="'+onclick+'" style="display:block;padding:8px 16px;font-size:13px;color:#333;text-decoration:none;white-space:nowrap;font-family:Arial,sans-serif;" onmouseover="this.style.background=\'#fff8f3\';this.style.color=\'#f60\'" onmouseout="this.style.background=\'\';this.style.color=\'#333\'">'+item.label+'</a>';
+    }).join('');
+    menu.style.display = 'block';
+  }
+}
+document.addEventListener('click', function(){ document.querySelectorAll('[id^="act-"]').forEach(function(m){ m.style.display='none'; }); });
+</script>
+<!-- Floating Chat Bubble -->
+<div onclick="openLiveChatModal ? openLiveChatModal() : openLiveHelpPopup()" style="position:fixed;bottom:24px;right:24px;width:56px;height:56px;border-radius:50%;background:#f60;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(255,102,0,0.45),0 2px 6px rgba(0,0,0,0.2);z-index:8000;transition:transform 0.15s,box-shadow 0.15s;" onmouseover="this.style.transform='scale(1.08)';this.style.boxShadow='0 6px 24px rgba(255,102,0,0.55),0 3px 8px rgba(0,0,0,0.22)'" onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 16px rgba(255,102,0,0.45),0 2px 6px rgba(0,0,0,0.2)'">
+  <svg width="26" height="26" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <rect x="4" y="5" width="24" height="17" rx="4" fill="#3d3d3d"/>
+    <path d="M9 27 L13 22 H9 Q7 22 7 20 V20" fill="#3d3d3d"/>
+  </svg>
+</div>
+</body>
+</html>
